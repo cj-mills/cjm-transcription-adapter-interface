@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "cjm-transcription-adapter-interface"
+  site-url: "https://cj-mills.github.io/cjm-transcription-adapter-interface"
+  description: "Typed transcription task-adapter interface — TranscriptionAdapter ABC, TranscriptionResult wire DTO, and transcription persistence helpers."
+  repo-branch: main
+  repo-url: "https://github.com/cj-mills/cjm-transcription-adapter-interface"
