@@ -15,7 +15,9 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = []
+dependencies = [
+    "cjm_plugin_system>=0.0.40",
+]
 
 [project.urls]
 Repository = "https://github.com/cj-mills/cjm-transcription-adapter-interface"
@@ -28,6 +30,6 @@ cjm_transcription_adapter_interface = "cjm_transcription_adapter_interface._modi
 version = {attr = "cjm_transcription_adapter_interface.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["cjm_transcription_adapter_interface"]
+include = ["cjm_transcription_adapter_interface*"]
 
 [tool.nbdev]
