@@ -196,7 +196,13 @@ class TranscriptionStorage:
         "Save a result, logging success/failure. Failures are logged and swallowed (returns False).
 
 Centralizes the try/save/log/except block every transcription plugin reimplements.
-Returns True on success so callers can gate post-save side effects on the result."
+Returns True on success so callers can gate post-save side effects on the result.
+
+CR-14 follow-up: records a RESULT_SAVED account either way (ok flag +
+row references/hashes — the journal never carries content) so saves AND
+swallowed save-failures become auditable journal rows. The old
+"(Job: ...)" message echo retired with it — the diagnostics handler
+stamps the QUEUE job id; the capability-DB row id rides the account."
     
     def get_cached(
             self,
@@ -208,7 +214,11 @@ Returns True on success so callers can gate post-save side effects on the result
 
 Matches on audio_path + audio_hash + config_hash. A changed audio file
 (new audio_hash) misses even if a stale row exists at the same
-(audio_path, config_hash) — the next save() replaces it."
+(audio_path, config_hash) — the next save() replaces it.
+
+CR-14 follow-up: a hit records a CACHE_HIT account (the cache-serving
+decision is an account-of-action — the E13/D3 dangling-provenance
+lesson made cache hits load-bearing facts)."
     
     def get_by_job_id(
             self,
