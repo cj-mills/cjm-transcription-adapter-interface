@@ -16,6 +16,11 @@ from dataclasses import dataclass, asdict
 from typing import Any, Dict, List, Optional
 
 from cjm_plugin_system.utils.hashing import hash_bytes, hash_file
+# CR-14 follow-up: storage events are substrate-family accounts. The helpers
+# below RECORD them (no-op outside a worker call span); the host journals
+# them off the response header with worker_reported=True.
+from cjm_plugin_system.core.journal_store import SubstrateEventType
+from cjm_plugin_system.core.wire import record_account
 
 # %% ../nbs/storage.ipynb #cell-row-dataclass
 @dataclass
@@ -151,7 +156,13 @@ class TranscriptionStorage:
         """Save a result, logging success/failure. Failures are logged and swallowed (returns False).
 
         Centralizes the try/save/log/except block every transcription plugin reimplements.
-        Returns True on success so callers can gate post-save side effects on the result."""
+        Returns True on success so callers can gate post-save side effects on the result.
+
+        CR-14 follow-up: records a RESULT_SAVED account either way (ok flag +
+        row references/hashes — the journal never carries content) so saves AND
+        swallowed save-failures become auditable journal rows. The old
+        "(Job: ...)" message echo retired with it — the diagnostics handler
+        stamps the QUEUE job id; the capability-DB row id rides the account."""
         try:
             self.save(
                 job_id=job_id,
@@ -163,10 +174,18 @@ class TranscriptionStorage:
                 segments=segments,
                 metadata=metadata,
             )
+            record_account(SubstrateEventType.RESULT_SAVED.value, {
+                "ok": True, "row_job_id": job_id, "audio_hash": audio_hash,
+                "config_hash": config_hash, "text_hash": text_hash,
+            })
             if logger:
-                logger.info(f"Saved result to DB (Job: {job_id})")
+                logger.info("Saved result to DB")
             return True
         except Exception as e:
+            record_account(SubstrateEventType.RESULT_SAVED.value, {
+                "ok": False, "row_job_id": job_id, "audio_hash": audio_hash,
+                "config_hash": config_hash, "error": str(e),
+            })
             if logger:
                 logger.error(f"Failed to save to DB: {e}")
             return False
@@ -181,7 +200,11 @@ class TranscriptionStorage:
 
         Matches on audio_path + audio_hash + config_hash. A changed audio file
         (new audio_hash) misses even if a stale row exists at the same
-        (audio_path, config_hash) — the next save() replaces it."""
+        (audio_path, config_hash) — the next save() replaces it.
+
+        CR-14 follow-up: a hit records a CACHE_HIT account (the cache-serving
+        decision is an account-of-action — the E13/D3 dangling-provenance
+        lesson made cache hits load-bearing facts)."""
         with sqlite3.connect(self.db_path) as con:
             cur = con.execute(
                 """SELECT job_id, audio_path, audio_hash, config_hash, text, text_hash,
@@ -191,7 +214,14 @@ class TranscriptionStorage:
                 (audio_path, audio_hash, config_hash)
             )
             row = cur.fetchone()
-            return self._row(row) if row else None
+        if row is None:
+            return None
+        hit = self._row(row)
+        record_account(SubstrateEventType.CACHE_HIT.value, {
+            "row_job_id": hit.job_id, "audio_hash": audio_hash,
+            "config_hash": config_hash,
+        })
+        return hit
 
     def get_by_job_id(
         self,
