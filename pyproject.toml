@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cjm-transcription-adapter-interface"
 dynamic = ["version"]
-description = "Typed transcription task-adapter interface — TranscriptionAdapter ABC, TranscriptionResult wire DTO, and transcription persistence helpers."
+description = "Typed transcription task-adapter interface — TranscriptionAdapter ABC + GenericTranscriptionAdapter (cache/persist bookends around a pure-compute tool), the TranscriptionToolProtocol, and transcription persistence helpers. The TranscriptionResult data noun lives in cjm-capability-primitives (re-exported here as a compat shim)."
 readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "Apache-2.0"}
@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "cjm_plugin_system>=0.0.45",
+    "cjm_capability_primitives>=0.0.1",
 ]
 
 [project.urls]

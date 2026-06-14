@@ -11,22 +11,28 @@ __all__ = ['TranscriptionToolProtocol', 'TranscriptionAdapter']
 # %% ../nbs/adapter.ipynb #b2f359ce
 from abc import abstractmethod
 from pathlib import Path
-from typing import Any, ClassVar, Protocol, Union, runtime_checkable
+from typing import Any, ClassVar, Dict, Protocol, Union, runtime_checkable
 
 from cjm_plugin_system.core.adapter import TaskAdapter
 
-from .core import TranscriptionResult
+# Canonical home (stage 8 / PILLAR 1c): import the data noun directly, not via
+# the REMOVE-AFTER-OVERHAUL `.core` shim, so the permanent ABC survives the
+# shim's retirement.
+from cjm_capability_primitives.transcription import TranscriptionResult
 
 # %% ../nbs/adapter.ipynb #101403e6
 @runtime_checkable
 class TranscriptionToolProtocol(Protocol):
-    """PROVISIONAL structural contract for transcription-capable tools.
+    """Structural contract for transcription tool capabilities (BORN REAL at
+    stage 8 — derived from the native tool surface, replacing the provisional
+    `execute`-shaped mirror).
 
-    Mirrors the fused-era surface (task-shaped `execute`); re-derived from
-    native tool surfaces when the Option C cascade splits tools (stage 8).
-    """
-    def execute(self, audio: Union[str, Path], **kwargs) -> Any: ...
-
+    Pure compute: `transcribe` loads the model + runs inference + builds the
+    typed result. `get_current_config` supplies the effective config the
+    generic adapter hashes for its cache key. Persistence is NOT here — the
+    adapter owns it (the native-surface seam)."""
+    def transcribe(self, audio: Union[str, Path], **kwargs) -> TranscriptionResult: ...
+    def get_current_config(self) -> Dict[str, Any]: ...
 
 # %% ../nbs/adapter.ipynb #1671e992
 class TranscriptionAdapter(TaskAdapter):
@@ -38,25 +44,32 @@ class TranscriptionAdapter(TaskAdapter):
     channel handling happens upstream (ffmpeg `convert_for_model`), never
     in the adapter.
 
-    Persistence sits BESIDE the task method (pass-2 Thread 3): the storage
-    module's `TranscriptionStorage` provides the adapter-level cache /
-    persist seam (`get_cached(audio_path, audio_hash, config_hash)` +
-    `save_with_logging(...)`).
+    Native-surface model (stage 8 / PILLAR 1c): the TOOL is pure compute;
+    the ADAPTER owns the cache + persistence bookends (see
+    `GenericTranscriptionAdapter`) + the per-call `force` control. Storage
+    resolves from the substrate-injected `PLUGIN_DATA_DIR`; `db_path` is not
+    on the tool protocol.
 
-    The result DTO is wire-registered ("transcription.result"): returned
-    values cross the worker boundary typed via the substrate's `core.wire`
-    envelope.
+    Implementations run in-worker beside their tool capability and are
+    constructed with the bound tool instance: `AdapterClass(tool)` (mirrors
+    `GraphStorageAdapter`). The result DTO is wire-registered
+    ("transcription.result"): returned values cross the worker boundary typed.
     """
 
     task_name: ClassVar[str] = "transcription"
-    required_tool_protocol: ClassVar[type] = TranscriptionToolProtocol  # PROVISIONAL
+    required_tool_protocol: ClassVar[type] = TranscriptionToolProtocol
+
+    def __init__(
+        self,
+        tool: TranscriptionToolProtocol,  # The bound tool capability instance (worker-side binding)
+    ):
+        self.tool = tool
 
     @abstractmethod
     def transcribe(
         self,
         audio: Union[str, Path],  # Path to MODEL-READY audio (converted upstream)
-        **kwargs,                 # Adapter-specific options (language, task, ...)
+        **kwargs,                 # Provenance (job_id / source_*_time) + tool options
     ) -> TranscriptionResult:     # Typed transcription output
         """Transcribe model-ready audio to text."""
         ...
-
