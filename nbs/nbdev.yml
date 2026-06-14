@@ -4,6 +4,6 @@ project:
 website:
   title: "cjm-transcription-adapter-interface"
   site-url: "https://cj-mills.github.io/cjm-transcription-adapter-interface"
-  description: "Typed transcription task-adapter interface — TranscriptionAdapter ABC, TranscriptionResult wire DTO, and transcription persistence helpers."
+  description: "Typed transcription task-adapter interface — TranscriptionAdapter ABC + GenericTranscriptionAdapter (cache/persist bookends around a pure-compute tool), the TranscriptionToolProtocol, and transcription persistence helpers. The TranscriptionResult data noun lives in cjm-capability-primitives (re-exported here as a compat shim)."
   repo-branch: main
   repo-url: "https://github.com/cj-mills/cjm-transcription-adapter-interface"
