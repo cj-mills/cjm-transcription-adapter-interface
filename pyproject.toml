@@ -17,7 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "cjm_plugin_system>=0.0.46",
-    "cjm_capability_primitives>=0.0.5",
+    "cjm_capability_primitives>=0.0.6",
 ]
 
 [project.urls]
