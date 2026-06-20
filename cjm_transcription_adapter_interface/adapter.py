@@ -13,7 +13,7 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any, ClassVar, Dict, Protocol, Union, runtime_checkable
 
-from cjm_plugin_system.core.adapter import TaskAdapter
+from cjm_substrate.core.adapter import TaskAdapter
 
 # Canonical home (stage 8 / PILLAR 1c): import the data noun directly, not via
 # the REMOVE-AFTER-OVERHAUL `.core` shim, so the permanent ABC survives the

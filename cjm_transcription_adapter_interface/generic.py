@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Any, Union
 from uuid import uuid4
 
-from cjm_plugin_system.core.wire import get_call_envelope
-from cjm_plugin_system.utils.hashing import hash_file, hash_bytes, hash_dict_canonical
+from cjm_substrate.core.wire import get_call_envelope
+from cjm_substrate.utils.hashing import hash_file, hash_bytes, hash_dict_canonical
 
 from cjm_capability_primitives.transcription import TranscriptionResult
 from .adapter import TranscriptionAdapter
