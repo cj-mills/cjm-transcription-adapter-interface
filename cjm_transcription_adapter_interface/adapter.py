@@ -47,7 +47,7 @@ class TranscriptionAdapter(TaskAdapter):
     Native-surface model (stage 8 / PILLAR 1c): the TOOL is pure compute;
     the ADAPTER owns the cache + persistence bookends (see
     `GenericTranscriptionAdapter`) + the per-call `force` control. Storage
-    resolves from the substrate-injected `PLUGIN_DATA_DIR`; `db_path` is not
+    resolves from the substrate-injected `CAPABILITY_DATA_DIR`; `db_path` is not
     on the tool protocol.
 
     Implementations run in-worker beside their tool capability and are

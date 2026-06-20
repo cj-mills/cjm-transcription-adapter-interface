@@ -35,16 +35,16 @@ class GenericTranscriptionAdapter(TranscriptionAdapter):
     canonical hash the fused-era plugins used — so a migrated tool keeps hitting
     rows written before the split. `force` rides `CallEnvelope.control` (not a
     task kwarg, keeping `transcribe(audio)` pure). Storage lives at
-    `<PLUGIN_DATA_DIR>/transcriptions.db`; the substrate injects the
-    per-capability `PLUGIN_DATA_DIR` at spawn (it owns the data-dir convention),
+    `<CAPABILITY_DATA_DIR>/transcriptions.db`; the substrate injects the
+    per-capability `CAPABILITY_DATA_DIR` at spawn (it owns the data-dir convention),
     so the adapter neither hard-codes a path nor asks the tool for one.
     """
 
     def _get_storage(self) -> TranscriptionStorage:
         """Lazily open the per-capability cache DB under the substrate-injected
-        PLUGIN_DATA_DIR (created at worker spawn)."""
+        CAPABILITY_DATA_DIR (created at worker spawn)."""
         if getattr(self, "_storage", None) is None:
-            db_path = os.path.join(os.environ["PLUGIN_DATA_DIR"], "transcriptions.db")
+            db_path = os.path.join(os.environ["CAPABILITY_DATA_DIR"], "transcriptions.db")
             self._storage = TranscriptionStorage(db_path)
         return self._storage
 
