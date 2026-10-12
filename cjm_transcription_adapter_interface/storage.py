@@ -19,6 +19,7 @@ from cjm_substrate.utils.hashing import hash_bytes, hash_file
 @dataclass
 class TranscriptionRow:
     """A single row from the transcriptions table."""
+
     job_id: str          # Unique job identifier
     audio_path: str      # Path to the source audio file
     audio_hash: str      # Hash of source audio in "algo:hexdigest" format

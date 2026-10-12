@@ -22,6 +22,7 @@ class TranscriptionToolProtocol(Protocol):
     typed result. `get_current_config` supplies the effective config the
     generic adapter hashes for its cache key. Persistence is NOT here — the
     adapter owns it (the native-surface seam)."""
+
     def transcribe(self, audio: Union[str, Path], **kwargs) -> TranscriptionResult: ...
     def get_current_config(self) -> Dict[str, Any]: ...
 
