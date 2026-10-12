@@ -1,6 +1,7 @@
 """Tests for cjm_transcription_adapter_interface.generic — cache/persistence bookends.
 
 Projected from the generic notebook's bookends cell at the c25780e8 flip."""
+
 from cjm_capability_primitives.transcription import TranscriptionResult
 from cjm_substrate.core.wire import CallEnvelope, reset_call_envelope, set_call_envelope
 from cjm_transcription_adapter_interface.generic import GenericTranscriptionAdapter

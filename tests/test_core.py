@@ -1,10 +1,11 @@
 """Tests for cjm_transcription_adapter_interface.core — the REMOVE-AFTER-OVERHAUL shim.
 
 Projected from the core notebook's verification cell at the c25780e8 flip."""
+
 import json
 
 import cjm_capability_primitives.transcription as _canonical
-from cjm_substrate.core.wire import WIRE_KIND_KEY, wire_decode, wire_encode
+from cjm_substrate.core.wire import wire_decode, wire_encode, WIRE_KIND_KEY
 from cjm_transcription_adapter_interface.core import TranscriptionResult
 
 

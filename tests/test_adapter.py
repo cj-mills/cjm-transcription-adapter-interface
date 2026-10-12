@@ -1,8 +1,8 @@
 """Tests for cjm_transcription_adapter_interface.adapter — the typed task contract.
 
 Projected from the adapter notebook's shape-test cell at the c25780e8 flip."""
-import pytest
 
+import pytest
 from cjm_capability_primitives.transcription import TranscriptionResult
 from cjm_transcription_adapter_interface.adapter import (TranscriptionAdapter,
                                                          TranscriptionToolProtocol)

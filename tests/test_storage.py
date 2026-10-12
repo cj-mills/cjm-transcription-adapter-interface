@@ -1,6 +1,7 @@
 """Tests for cjm_transcription_adapter_interface.storage — the canonical transcriptions table.
 
 Projected from the storage notebook's test cells at the c25780e8 flip."""
+
 import logging
 import sqlite3
 
